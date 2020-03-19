@@ -1,0 +1,118 @@
+#####code for motif scan practice
+
+import os
+import re
+
+###dictionary format of gene and its promoter region
+inPath1='C:\Users\user\Desktop\Motif_Scan\Motif_Scan\Promoters'
+promoterD={}
+promoterRD={}
+f=open(inPath1)
+for line in f.readlines():
+    A=line.strip() #strip�O�h���ťզr���A�i�H���w���k�A�k��ťլOrstrip
+    if A.startswith(">"):
+        C=""
+        B=A.split()[0]
+        B=B[1:len(B)]
+        #D=""
+    else:
+        C=C+A
+    promoterD[B]=C
+#print promoterD
+Genename=promoterD.keys()
+#print Genename
+
+###cutoff
+inPath3='C:\Users\user\Desktop\Motif_Scan\Motif_Scan\cutoffs'
+f3=open(inPath3)
+cutoffD={}
+for line in f3.readlines():
+    D=line.split()
+    Key=D[0]
+    Item=D[1]
+    cutoffD[Key]=Item
+#print cutoffD
+
+###path
+path=[]
+tfid=[]
+for dirPath, dirNames, fileNames in os.walk("C:\Users\user\Desktop\Motif_Scan\Motif_Scan\TF PWM"):
+    for f in fileNames:
+        A=os.path.join(dirPath, f)
+        B=os.path.split(A)[-1]
+        C=B.split('.')[1]
+        path.append(B)
+        tfid.append(C)
+    #print path
+    #print tfid
+#input and output file        
+outtargetpath='C:\Users\user\Desktop\Motif_Scan\Motif_Scan\output'
+intargetpath='C:\Users\user\Desktop\Motif_Scan\Motif_Scan\TF PWM'
+for i in range (0,len(path)):
+    inPath2= intargetpath + '\\' + path[i]
+    OutPath1= outtargetpath + '\\' + path[i]
+    OutFile1=open(OutPath1,'w')
+    OutFile1.write('Genename'+'\t'+'Genename'+'\t'+'TF'+'\t'+'start site'+'\t'+'motif seq'+'\t'+'score'+'\t'+'strand'+'\t'+'\n')
+    f2=open(inPath2)
+    PWM=[]
+    rPWM=[]
+    for line in f2.readlines():
+        D=line.split()
+        PWM=PWM+D
+        rPWM=PWM[::-1]
+    PWM_len=len(PWM)/4-2 #print PWM_len#RPA1_+strand 
+    for j in range (0,len(Genename)):
+            Num_scan=len(promoterD[Genename[j]])-PWM_len+1 #�T�{�Uscan����#len(promoterD[Genename[i]])#length of promoter seq
+            Num=0
+            for k in range (0,Num_scan):
+                score=0
+                M=promoterD[Genename[j]][Num:Num+PWM_len]
+                pos=Num-len(promoterD[Genename[j]])
+                for l in range (0,PWM_len):
+                    if M[l]== PWM[0]: #mean A
+                        score=score+float(PWM[l+2])
+                    elif M[l]==PWM[PWM_len+2]:
+                        score=score+float(PWM[l+PWM_len+2+2])
+                    elif M[l]==PWM[2*(PWM_len+2)]:
+                        score=score+float(PWM[l+2*(PWM_len+2)+2])
+                    elif M[l]==PWM[3*(PWM_len+2)]:
+                        score=score+float(PWM[l+3*(PWM_len+2)+2])
+                    #�P�_��n���B�z�覡�n�[�J
+                if score>float(cutoffD[tfid[i]]):
+                    OutFile1.write(Genename[j]+'\t'+tfid[i]+'\t'+str(pos)+'\t'+M+'\t'+str(score)+'\t'+'+'+'\t'+'\n'),
+                    #OutFile1.write(tfid[i]+'\t'),
+                    #OutFile1.write(str(pos)+'\t'),
+                    #OutFile1.write(M+'\t'),
+                    #OutFile1.write(str(score)+'\t'),
+                    #OutFile1.write('+'+'\t'),
+                    #OutFile1.write('\n')
+                Num=Num+1
+        #RPA1_-strand
+    for j in range (0,len(Genename)):
+            Num_scan=len(promoterRD[Genename[j]])-PWM_len+1
+            Num=0
+            for k in range (0,Num_scan):
+                score=0
+                M=promoterRD[Genename[j]][Num:Num+PWM_len]
+                pos=Num*(-1)-1
+                for l in range (0,PWM_len):
+                    if M[l]== PWM[0]: #mean A
+                        score=score+float(PWM[l+2])
+                    elif M[l]==PWM[PWM_len+2]:
+                        score=score+float(PWM[l+PWM_len+2+2])
+                    elif M[l]==PWM[2*(PWM_len+2)]:
+                        score=score+float(PWM[l+2*(PWM_len+2)+2])
+                    elif M[l]==PWM[3*(PWM_len+2)]:
+                        score=score+float(PWM[l+3*(PWM_len+2)+2])
+                if score>float(cutoffD[tfid[i]]):
+                    OutFile1.write(Genename[j]+'\t'),
+                    OutFile1.write(tfid[i]+'\t'),
+                    OutFile1.write(str(pos)+'\t'),
+                    OutFile1.write(M+'\t'),
+                    OutFile1.write(str(score)+'\t'),
+                    OutFile1.write('-'+'\t'),
+                    OutFile1.write('\n')
+                Num=Num+1
+OutFile1.close()
+
+
