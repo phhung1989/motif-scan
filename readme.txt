@@ -14,7 +14,7 @@ example : python motif_scan_server.py test_promoter.txt cutoffs.txt PWM SC ./ 30
                Thus, the cds length is 300bp. If you do not include the coding region, the value will be 0.
                
                
-The output file contains the following information: Genename,	TF,	start site,	stop site,	motif seq,	score,	strand.	
+The output file contains the following information: Genename, TF, start site, stop site, motif seq, score, strand.	
 
 The motif hit start site and stop site are the relative position to the translation start site.
 If it is a negative value, the motif is locate in the region upstream of the translation start site. (ex: -1 is the first nucleotide upstream of ATG)
