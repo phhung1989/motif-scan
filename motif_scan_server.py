@@ -80,7 +80,7 @@ for line in file_promoter: #process the promoter into dictionary format
     promoterD[gene]=C
 genename=promoterD.keys()
 for gene in genename: #one promoter
-    geneid=gene.split("_")[0]
+    geneid=gene.split("_promoter")[0]
     promoter=promoterD[gene]
     for TF in tfid:
         num_scan=len(promoter)-pwmlenD[TF]+1
@@ -104,6 +104,8 @@ for gene in genename: #one promoter
                     score1=score1+float(pwmD[TF][i+3*(pwmlenD[TF]+2)+2])
                 elif M[i]==pwmD[TF][4*(pwmlenD[TF]+2)]:
                     score1=score1+float(pwmD[TF][i+4*(pwmlenD[TF]+2)+2])
+                else:#not N but consider as N
+                    score1=score1+float(pwmD[TF][i+4*(pwmlenD[TF]+2)+2])
                 if M[i]== rpwmD[TF][pwmlenD[TF]+2-1]:
                     score2=score2+float(rpwmD[TF][i])
                 elif M[i]==rpwmD[TF][2*(pwmlenD[TF]+2)-1]:
@@ -113,7 +115,9 @@ for gene in genename: #one promoter
                 elif M[i]==rpwmD[TF][4*(pwmlenD[TF]+2)-1]:
                     score2=score2+float(rpwmD[TF][i+3*(pwmlenD[TF]+2)])
                 elif M[i]==rpwmD[TF][5*(pwmlenD[TF]+2)-1]:
-                    score2=score2+float(rpwmD[TF][i+4*(pwmlenD[TF]+2)])    
+                    score2=score2+float(rpwmD[TF][i+4*(pwmlenD[TF]+2)]) 
+                else:#not N but consider as N
+                    score2=score2+float(rpwmD[TF][i])
             if score1>=float(cutoffD[TF]):
                 outfile_scan.write(geneid+'\t'+TF+'\t'+str(pos_start)+'\t'+str(pos_stop)+'\t'+M+'\t'+str(score1)+'\t'+'+'+'\t'+'\n'),
             if score2>=float(cutoffD[TF]):
